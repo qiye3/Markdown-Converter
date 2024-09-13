@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QSizePolicy
 from PyQt5.QtGui import QFont
-from converter import convert_md_to_anki
+from converter import convert_md_to_anki, convert_anki_to_md
 import pyperclip
 
 
@@ -42,6 +42,12 @@ class MarkdownToAnkiConverter(QWidget):
                                      'QPushButton:hover { background-color: #999999; color: #ffffff; }')
         button_convert.clicked.connect(self.convert_button_clicked)
 
+        button_reverse_convert = QPushButton('反向转换')
+        button_reverse_convert.setFont(font_label)
+        button_reverse_convert.setStyleSheet('QPushButton { background-color: #dddddd; color: #000000; border: 1px solid #808080; padding: 10px; border-radius: 5px; }'
+                                             'QPushButton:hover { background-color: #999999; color: #ffffff; }')
+        button_reverse_convert.clicked.connect(self.reverse_convert_button_clicked)
+
         button_clear = QPushButton('清空输入')
         button_clear.setFont(font_label)
         button_clear.setStyleSheet('QPushButton { background-color: #dddddd; color: #000000; border: 1px solid #808080; padding: 10px; border-radius: 5px; }'
@@ -57,6 +63,7 @@ class MarkdownToAnkiConverter(QWidget):
         # 按钮布局
         button_layout = QHBoxLayout()
         button_layout.addWidget(button_convert)
+        button_layout.addWidget(button_reverse_convert)
         button_layout.addWidget(button_clear)
         button_layout.addWidget(button_copy)
 
@@ -76,8 +83,14 @@ class MarkdownToAnkiConverter(QWidget):
         anki_content = convert_md_to_anki(md_content)
         self.text_output.setPlainText(anki_content)
 
+    def reverse_convert_button_clicked(self):
+        anki_content = self.text_input.toPlainText()
+        md_content = convert_anki_to_md(anki_content)
+        self.text_output.setPlainText(md_content)
+
     def clear_button_clicked(self):
         self.text_input.clear()
+        self.text_output.clear()
 
     def copy_button_clicked(self):
         anki_content = self.text_output.toPlainText()
