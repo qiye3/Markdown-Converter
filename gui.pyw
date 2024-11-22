@@ -4,6 +4,11 @@ from PyQt5.QtGui import QFont
 from converter import convert_md_to_anki, convert_anki_to_md
 import pyperclip
 
+class PlainTextEdit(QTextEdit):
+    def insertFromMimeData(self, source):
+        """重写粘贴功能，只保留纯文本"""
+        if source.hasText():
+            self.insertPlainText(source.text())  # 仅插入纯文本
 
 class MarkdownToAnkiConverter(QWidget):
     def __init__(self):
@@ -22,7 +27,7 @@ class MarkdownToAnkiConverter(QWidget):
         # 输入Markdown文本部分
         label_input = QLabel('输入Markdown文本:')
         label_input.setFont(font_label)
-        self.text_input = QTextEdit()
+        self.text_input = PlainTextEdit()  # 替换为自定义类
         self.text_input.setFont(font_textedit)
         self.text_input.setStyleSheet('background-color: #FAFAFA; border: 1px solid #000000;')
         self.text_input.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)  # 设置大小策略，高度固定，宽度扩展
@@ -30,7 +35,7 @@ class MarkdownToAnkiConverter(QWidget):
         # 输出Anki格式文本部分
         label_output = QLabel('转换后的Anki格式:')
         label_output.setFont(font_label)
-        self.text_output = QTextEdit()
+        self.text_output = PlainTextEdit()  # 替换为自定义类
         self.text_output.setFont(font_textedit)
         self.text_output.setStyleSheet('background-color: #FAFAFA; border: 1px solid #000000;')
         self.text_output.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # 设置大小策略，宽高都扩展
@@ -90,7 +95,6 @@ class MarkdownToAnkiConverter(QWidget):
 
     def clear_button_clicked(self):
         self.text_input.clear()
-        self.text_output.clear()
 
     def copy_button_clicked(self):
         anki_content = self.text_output.toPlainText()
